@@ -11,8 +11,8 @@ if (process.env.JAWSDB_URL) {
         password: "hacktheplanet",
         database: "todoagain_db"
     })
-});
+};
 
-connection.connect() {
+connection.connect()
 
 module.exports = connection;

@@ -1,44 +1,42 @@
-var express = require("express");
+let express = require("express");
+let db = require("../models");
 
-var router = express.Router();
+module.exports = function(app) {
 
-var burger = require("../models/burger.js");
-
-router.get("/", function(req, res) {
-    burger.all(function(data) {
-        var hObject = {
-            burgers: data
-        };
-        console.log(hObject);
-        res.render("index", hObject);
+    app.get("/", function(req, res) {
+        db.Burger.findAll({}).then(function(data) {
+            let wheresTheBrgr = {
+                burgers: data
+            };
+            res.render("index", wheresTheBrgr);
+        });
     });
-});
 
-router.post("/", function(req, res) {
-    console.log(req.body);
-    burger.create(["burger_name"], [req.body.burger_name], function() {
-        res.redirect("/");
+    app.post("/", function(req, res) {
+        db.Burger.create(req.body).then(function(data) {
+            res.redirect("/");
+        });
     });
-});
 
-router.put("/:id", function(req, res) {
-    var condition = req.params.id;
-    console.log("Devoured:", req.body.devoured);
-    console.log("condition", condition);
-
-    burger.update({
-        devoured: req.body.devoured
-    }, condition, function() {
-        res.redirect("/");
+    app.delete("/:id", function(req, res) {
+        db.Burger.destroy({
+            where: {
+                id: req.params.id
+            }
+        }).then(function(data) {
+            res.redirect("/");
+        });
     });
-});
 
-router.delete("/:id", function(req, res) {
-    let condition = req.params.id;
-    burger.remove(condition, function() {
-        console.log("Removed id: " + condition);
-        res.redirect('/');
-    })
-});
-
-module.exports = router;
+    app.put("/:id", function(req, res) {
+        db.Burger.update({
+            devoured: true
+        }, {
+            where: {
+                id: req.params.id
+            }
+        }).then(function(data) {
+            res.redirect("/");
+        });
+    });
+};
